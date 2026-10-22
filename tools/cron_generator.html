@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Visual Cron Expression Generator & Explainer (Free)</title>
+    <meta name="description" content="Generate and translate standard cron schedules into plain English instantly. 100% free developer tool.">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 p-6 min-h-screen">
+    <div class="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="flex items-center justify-between mb-4">
+            <h1 class="text-2xl font-bold text-gray-900">⏰ Visual Cron Expression Generator</h1>
+            <a href="../index.html" class="text-xs text-indigo-600 hover:underline">← Back to Tools</a>
+        </div>
+        <p class="text-sm text-gray-500 mb-6">Select common scheduling presets or type custom cron syntax to see what it means.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+                <label class="block font-bold text-gray-700 text-xs mb-2">Common Presets:</label>
+                <div class="space-y-2">
+                    <button onclick="setCron('*/5 * * * *', 'Every 5 minutes')" class="w-full text-left p-2.5 text-xs bg-slate-100 hover:bg-slate-200 rounded font-mono">⏱️ */5 * * * * — Every 5 minutes</button>
+                    <button onclick="setCron('0 * * * *', 'Every hour at minute 0')" class="w-full text-left p-2.5 text-xs bg-slate-100 hover:bg-slate-200 rounded font-mono">🕒 0 * * * * — Every hour</button>
+                    <button onclick="setCron('0 0 * * *', 'Every day at midnight (00:00)')" class="w-full text-left p-2.5 text-xs bg-slate-100 hover:bg-slate-200 rounded font-mono">🌙 0 0 * * * — Daily midnight</button>
+                    <button onclick="setCron('0 9 * * 1-5', 'At 09:00 AM, Monday through Friday')" class="w-full text-left p-2.5 text-xs bg-slate-100 hover:bg-slate-200 rounded font-mono">💼 0 9 * * 1-5 — Weekdays at 9 AM</button>
+                </div>
+            </div>
+
+            <div>
+                <label class="block font-bold text-gray-700 text-xs mb-2">Current Cron Expression:</label>
+                <input id="cronInput" type="text" value="0 0 * * *" class="w-full p-3 font-mono text-base border rounded-lg focus:ring-2 focus:ring-indigo-500 mb-4 text-center font-bold text-indigo-600">
+                
+                <div class="p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
+                    <div class="text-xs font-bold text-indigo-900 uppercase tracking-wider mb-1">Human Readable Meaning:</div>
+                    <div id="cronExplanation" class="text-sm text-indigo-800 font-semibold">Every day at midnight (00:00)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center pt-4 border-t text-xs text-gray-400">
+            DevLite Tools • Free for all developers
+        </div>
+    </div>
+    <script>
+        function setCron(expr, explanation) {
+            document.getElementById('cronInput').value = expr;
+            document.getElementById('cronExplanation').textContent = explanation;
+        }
+        document.getElementById('cronInput').addEventListener('input', (e) => {
+            const v = e.target.value.trim();
+            document.getElementById('cronExplanation').textContent = "Custom schedule: " + v;
+        });
+    </script>
+</body>
+</html>
