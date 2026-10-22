@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Token 消耗与成本极速计算器 (Free AI Cost Calculator)</title>
+    <meta name="description" content="专为开发者打造的 AI Token 计算器，支持 GPT-4o, DeepSeek, Claude 3.5 Sonnet 最新价格模型，即算即用。">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- 顶部导航 -->
+    <header class="bg-white border-b border-slate-200 py-4 px-6 shadow-sm">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl">⚡</span>
+                <span class="font-bold text-lg text-slate-900">AI Cost Radar</span>
+                <span class="text-xs bg-emerald-100 text-emerald-800 font-semibold px-2 py-0.5 rounded">v2.0 免费版</span>
+            </div>
+            <div>
+                <a href="#sponsor" class="text-sm bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition">☕ 请作者喝咖啡</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主体区域 -->
+    <main class="max-w-4xl mx-auto p-6 w-full flex-grow">
+        <div class="text-center my-6">
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight sm:text-4xl">主流大模型 Token 成本估算器</h1>
+            <p class="mt-2 text-slate-600 text-sm">输入你的 Prompt 字符或预估 Token，立即对比 OpenAI, DeepSeek, Anthropic 真实调用花费。</p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-md border border-slate-200 p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 输入框 -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">粘贴输入文本 (Prompt):</label>
+                    <textarea id="inputText" rows="6" placeholder="在此粘贴你的提示词或长文档..." class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm font-mono"></textarea>
+                    
+                    <div class="flex justify-between items-center mt-2 text-xs text-slate-500">
+                        <span>字符数: <b id="charCount">0</b></span>
+                        <span>预估输入 Token: <b id="tokenCount">0</b></span>
+                    </div>
+                </div>
+
+                <!-- 输出参数 -->
+                <div class="flex flex-col justify-between">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">预估生成长度 (Output Tokens):</label>
+                        <input type="range" id="outputTokensRange" min="100" max="8000" step="100" value="1000" class="w-full">
+                        <div class="text-right text-xs text-slate-600 mt-1 font-mono">
+                            期望输出: <span id="outputTokensDisplay" class="font-bold text-indigo-600">1,000</span> Tokens
+                        </div>
+
+                        <label class="block text-sm font-semibold text-slate-700 mt-4 mb-2">调用频次估算:</label>
+                        <select id="callFrequency" class="w-full p-2 border border-slate-300 rounded-lg text-sm bg-white">
+                            <option value="1">单次测试 (1 次)</option>
+                            <option value="1000">小微业务 (1,000 次/月)</option>
+                            <option value="10000">规模业务 (10,000 次/月)</option>
+                            <option value="100000">大规模调用 (100,000 次/月)</option>
+                        </select>
+                    </div>
+
+                    <!-- 广告位占位 (实战中替换为 Google AdSense 代码) -->
+                    <div class="mt-4 p-3 bg-slate-100 border border-dashed border-slate-300 rounded-lg text-center text-xs text-slate-400">
+                        <span>[广告位占位符：可接入 Google AdSense 或 Affiliate 联盟推广链接]</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 价格对比表格 -->
+            <div class="mt-8 border-t border-slate-200 pt-6">
+                <h3 class="text-base font-bold text-slate-900 mb-4">💰 各大模型预估开销对比 (USD)</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-600">
+                        <thead class="bg-slate-100 text-slate-800 text-xs uppercase font-semibold">
+                            <tr>
+                                <th class="p-3">模型名称</th>
+                                <th class="p-3">输入价格 ($/1M)</th>
+                                <th class="p-3">输出价格 ($/1M)</th>
+                                <th class="p-3 text-right">总预估费用</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pricingTable" class="divide-y divide-slate-200">
+                            <!-- 动态填充 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部赞助与变现说明 -->
+    <footer id="sponsor" class="bg-white border-t border-slate-200 py-6 px-6 text-center text-xs text-slate-500">
+        <p>本项目由 AI 自动化微工具流水线直接编译生成 • 零后端托管 • 永久免维护</p>
+        <p class="mt-1">
+            喜欢本工具？你可以通过 <a href="https://buymeacoffee.com" target="_blank" class="text-indigo-600 underline">Buy Me a Coffee</a> 赞助支持。
+        </p>
+    </footer>
+
+    <script>
+        const MODELS = [
+            { name: "DeepSeek-V3", inputPrice: 0.14, outputPrice: 0.28, tag: "最省钱" },
+            { name: "GPT-4o mini", inputPrice: 0.15, outputPrice: 0.60, tag: "均衡微型" },
+            { name: "Claude 3.5 Sonnet", inputPrice: 3.00, outputPrice: 15.00, tag: "代码最强" },
+            { name: "GPT-4o (Standard)", inputPrice: 2.50, outputPrice: 10.00, tag: "旗舰主流" }
+        ];
+
+        const inputEl = document.getElementById('inputText');
+        const charCountEl = document.getElementById('charCount');
+        const tokenCountEl = document.getElementById('tokenCount');
+        const outputRange = document.getElementById('outputTokensRange');
+        const outputDisplay = document.getElementById('outputTokensDisplay');
+        const freqSelect = document.getElementById('callFrequency');
+        const tableBody = document.getElementById('pricingTable');
+
+        function calculate() {
+            const text = inputEl.value;
+            const charCount = text.length;
+            // 简单中英文混合 token 估算算法
+            const tokens = Math.max(10, Math.ceil(charCount * 0.7));
+            const outTokens = parseInt(outputRange.value);
+            const freq = parseInt(freqSelect.value);
+
+            charCountEl.innerText = charCount.toLocaleString();
+            tokenCountEl.innerText = tokens.toLocaleString();
+            outputDisplay.innerText = outTokens.toLocaleString();
+
+            tableBody.innerHTML = '';
+            MODELS.forEach(m => {
+                const inputCost = (tokens / 1_000_000) * m.inputPrice;
+                const outputCost = (outTokens / 1_000_000) * m.outputPrice;
+                const total = (inputCost + outputCost) * freq;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3 font-semibold text-slate-800 flex items-center gap-2">
+                        ${m.name}
+                        ${m.tag ? `<span class="text-xs bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded font-normal">${m.tag}</span>` : ''}
+                    </td>
+                    <td class="p-3 font-mono">$${m.inputPrice.toFixed(2)}</td>
+                    <td class="p-3 font-mono">$${m.outputPrice.toFixed(2)}</td>
+                    <td class="p-3 font-mono font-bold text-right text-indigo-600">$${total < 0.0001 ? '<$0.0001' : total.toFixed(4)}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        inputEl.addEventListener('input', calculate);
+        outputRange.addEventListener('input', calculate);
+        freqSelect.addEventListener('change', calculate);
+
+        // 默认初始化运行一次
+        inputEl.value = "请写一段关于如何利用 AI 自动化构建被动收入资产的详细操作大纲，要求具备落地实战步骤，避免空谈概念。";
+        calculate();
+    </script>
+</body>
+</html>
