@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Instant URL Encoder, Decoder & Query Param Inspector (Free)</title>
+    <meta name="description" content="Parse URLs, inspect query parameters into JSON, and decode encoded URL entities instantly.">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 p-6 min-h-screen">
+    <div class="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="flex items-center justify-between mb-4">
+            <h1 class="text-2xl font-bold text-gray-900">🔗 Instant URL Inspector & Decoder</h1>
+            <a href="../index.html" class="text-xs text-indigo-600 hover:underline">← Back to Tools</a>
+        </div>
+        <p class="text-sm text-gray-500 mb-4">Paste any complex URL to unpack its query parameters into clean JSON.</p>
+
+        <textarea id="urlInput" rows="3" placeholder="https://example.com/search?q=ai+tools&page=1&ref=twitter" class="w-full p-3 font-mono text-xs border rounded-lg focus:ring-2 focus:ring-blue-500 mb-4"></textarea>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block font-bold text-gray-700 text-xs mb-1">Parsed Query Parameters (JSON):</label>
+                <pre id="queryJson" class="bg-gray-900 text-emerald-400 p-3 rounded-lg font-mono text-xs min-h-[140px] overflow-x-auto">{}</pre>
+            </div>
+            <div>
+                <label class="block font-bold text-gray-700 text-xs mb-1">URL Details:</label>
+                <div id="urlMeta" class="bg-gray-100 p-3 rounded-lg text-xs space-y-1 font-mono min-h-[140px]">
+                    <div><b>Origin:</b> -</div>
+                    <div><b>Pathname:</b> -</div>
+                    <div><b>Protocol:</b> -</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('urlInput').addEventListener('input', (e) => {
+            const raw = e.target.value.trim();
+            try {
+                const u = new URL(raw);
+                const params = {};
+                u.searchParams.forEach((val, key) => { params[key] = val; });
+                document.getElementById('queryJson').textContent = JSON.stringify(params, null, 2);
+                document.getElementById('urlMeta').innerHTML = `
+                    <div><b>Protocol:</b> ${u.protocol}</div>
+                    <div><b>Host:</b> ${u.host}</div>
+                    <div><b>Pathname:</b> ${u.pathname}</div>
+                    <div><b>Hash:</b> ${u.hash || 'None'}</div>
+                `;
+            } catch(err) {
+                document.getElementById('queryJson').textContent = "Waiting for valid URL...";
+            }
+        });
+    </script>
+</body>
+</html>
